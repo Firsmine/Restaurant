@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -11,15 +12,12 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        $order = Order::get();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Get all orders successful',
+            'data' => $order
+        ]);
     }
 
     /**
@@ -27,7 +25,18 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'TransactionID' => 'required|integer|exists:transactions,TransactionID',
+            'EmployeeID' => 'required|integer|exists:employees,EmployeeID',
+            'OrderTime' => 'nullable|datetime'
+        ]);
+        $order = Order::create($data);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Order added successful',
+            'data' => $order
+        ]);
     }
 
     /**
@@ -35,23 +44,13 @@ class OrderController extends Controller
      */
     public function show(string $id)
     {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
+        $order = Order::findOrFail($id);
+        $order->with('transaction.table');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Get order detail successful',
+            'data' => $order
+        ]);
     }
 
     /**
@@ -59,6 +58,11 @@ class OrderController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $order = Order::findOrFail($id);
+        $order->delete();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Order deleted successful',
+        ]);
     }
 }

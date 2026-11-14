@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 
 class TransactionController extends Controller
@@ -9,13 +10,24 @@ class TransactionController extends Controller
 
     public function index()
     {
-        //
+        $transaction = Transaction::get();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Get all transaction successful',
+            'data' => $transaction
+        ]);
     }
 
 
     public function store(Request $request)
     {
-        //
+        $data = $request->validate([
+            'TableID' => 'required|integer|exists:restauranttables,tableID',
+            'CustomerName' => 'required|string|max:255',
+            'TransactionData' => 'nullable|date',
+            'Status' => 'nullable|in:Completed,Cancelled'
+        ]);
     }
 
     /**
@@ -23,13 +35,13 @@ class TransactionController extends Controller
      */
     public function show(string $id)
     {
-        //
-    }
-
-
-    public function update(Request $request, string $id)
-    {
-        //
+        $transaction = Transaction::findOrFail($id);
+        $transaction->with('table');
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Get transaction detail successful',
+            'data' => $transaction
+        ]);
     }
 
     /**
@@ -37,6 +49,11 @@ class TransactionController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $transaction = Transaction::findOrFail($id);
+        $transaction->delete();
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Transaction deleted successful',
+        ]);
     }
 }
