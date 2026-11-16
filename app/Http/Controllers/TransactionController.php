@@ -25,8 +25,14 @@ class TransactionController extends Controller
         $data = $request->validate([
             'TableID' => 'required|integer|exists:restauranttables,tableID',
             'CustomerName' => 'required|string|max:255',
-            'TransactionData' => 'nullable|date',
+            'TransactionDate' => 'nullable|date',
             'Status' => 'nullable|in:Completed,Cancelled'
+        ]);
+        $transaction = Transaction::create($data);
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Transaction added successful',
+            'data' => $transaction
         ]);
     }
 
@@ -35,7 +41,7 @@ class TransactionController extends Controller
      */
     public function show(string $id)
     {
-        $transaction = Transaction::findOrFail($id);
+        $transaction = Transaction::with('table')->findOrFail($id);
         $transaction->with('table');
         return response()->json([
             'status' => 'success',

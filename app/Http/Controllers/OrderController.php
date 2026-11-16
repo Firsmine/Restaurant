@@ -28,7 +28,7 @@ class OrderController extends Controller
         $data = $request->validate([
             'TransactionID' => 'required|integer|exists:transactions,TransactionID',
             'EmployeeID' => 'required|integer|exists:employees,EmployeeID',
-            'OrderTime' => 'nullable|datetime'
+            'OrderTime' => 'required|date|date_format:Y-m-d'
         ]);
         $order = Order::create($data);
 
@@ -44,8 +44,7 @@ class OrderController extends Controller
      */
     public function show(string $id)
     {
-        $order = Order::findOrFail($id);
-        $order->with('transaction.table');
+        $order = Order::with('transaction.table')->where('OrderID', $id)->first();
         return response()->json([
             'status' => 'success',
             'message' => 'Get order detail successful',

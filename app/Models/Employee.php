@@ -17,6 +17,7 @@ class Employee extends Authenticatable
     use HasFactory, Notifiable;
     use HasApiTokens;
     public $timestamps = false;
+    protected $primaryKey = 'EmployeeID';
     protected $fillable = [
         'Name',
         'Role',
@@ -25,6 +26,7 @@ class Employee extends Authenticatable
         'HireDate',
         'Password'
     ];
+    protected $hidden = ['Password'];
     protected function casts(): array
     {
         return [

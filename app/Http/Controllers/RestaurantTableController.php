@@ -9,7 +9,7 @@ class RestaurantTableController extends Controller
 {
     public function index()
     {
-        $table = RestaurantTable::get();
+        $table = RestaurantTable::orderBy('TableID', 'asc')->get();
         return response()->json([
             'status' => 'success',
             'message' => 'Get all restaurant tables success',

@@ -22,7 +22,7 @@ class MenuItemsController extends Controller
     {
         $data = $request->validate([
             'Name' => 'required|string|max:255',
-            'Price' => 'required|numeric|min:0.01|decimal:12,2',
+            'Price' => 'required|numeric|min:0.01|decimal:0,2',
             'Description' => 'nullable|string',
             'CategoryID' => 'required|integer|exists:categories,CategoryID'
         ]);
@@ -40,7 +40,7 @@ class MenuItemsController extends Controller
      */
     public function show(string $id)
     {
-        $menu = MenuItem::findOrFail($id);
+        $menu = MenuItem::where('MenuItemID', $id)->get();
         return response()->json([
             'status' => 'success',
             'message' => 'Get menu item detail successful',
@@ -52,13 +52,13 @@ class MenuItemsController extends Controller
     public function update(Request $request, string $id)
     {
         $data = $request->validate([
-            'Name' => 'required|string|max:255',
-            'Price' => 'required|numeric|min:0.01|decimal:12,2',
-            'Description' => 'nullable|string',
-            'CategoryID' => 'required|integer|exists:categories,CategoryID'
+            'Name' => 'sometimes|string|max:255',
+            'Price' => 'sometimes|numeric|min:0.01|decimal:0,2',
+            'Description' => 'sometimes|string',
         ]);
-        $menu = MenuItem::findOrFail($id);
+        $menu = MenuItem::where('MenuItemID', $id)->first();
         $menu->update($data);
+        $menu->get();
 
         return response()->json([
             'status' => 'success',
@@ -72,7 +72,7 @@ class MenuItemsController extends Controller
      */
     public function destroy(string $id)
     {
-        $menu = MenuItem::findOrFail($id);
+        $menu = MenuItem::find($id);
         if (!$menu) {
             return response()->json([
                 'status' => 'error',

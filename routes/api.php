@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\MenuItemsController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderDetailController;
 use App\Http\Controllers\RestaurantTableController;
 use App\Http\Controllers\TransactionController;
 use App\Models\OrderDetail;
@@ -40,8 +41,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('orders/{id}', [OrderController::class, 'destroy']);
 
     // order detail
-    Route::get('order-details', [OrderDetail::class, 'index']);
-    Route::post('order-details', [OrderDetail::class, 'store']);
-    Route::get('order-details/{transactionId}', [OrderDetail::class, 'show']);
-    Route::delete('order-details/{transactionId}', [OrderDetail::class, 'destroy']);
+    Route::get('order-details', [OrderDetailController::class, 'index']);
+    Route::post('order-details', [OrderDetailController::class, 'store']);
+    Route::get('order-details/{transactionId}', [OrderDetailController::class, 'show']);
+    Route::delete('order-details/{id}', [OrderDetailController::class, 'destroy']);
 });

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MenuItem;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Transaction;
@@ -25,8 +26,9 @@ class OrderDetailController extends Controller
             'OrderID' => 'required|integer|exists:orders,OrderID',
             'MenuItemID' => 'required|integer|exists:menuitems,MenuItemID',
             'Quantity' => 'required|integer|min:0',
-            'Price' => 'required|numeric|min:0.01|decimal:12,2'
         ]);
+        $menuItem = MenuItem::findOrFail($data['MenuItemID']);
+        $data['Price'] = $menuItem->Price * $data['Quantity'];
         $orderDetail = OrderDetail::create($data);
         return response()->json([
             'status' => 'success',
@@ -41,8 +43,8 @@ class OrderDetailController extends Controller
     public function show(string $transactionId)
     {
         $transaction = Transaction::findOrFail($transactionId);
-        $order = Order::when('TransactionID', $transaction->id)->get();
-        $orderDetail = OrderDetail::where('OrderID', $order->id)->get();
+        $order = Order::where('TransactionID', $transaction->TransactionID)->pluck('OrderID');
+        $orderDetail = OrderDetail::whereIn('OrderID', $order)->get();
         return response()->json([
             'status' => 'success',
             'message' => 'Get order detail successful',
@@ -53,16 +55,13 @@ class OrderDetailController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $transactionId)
+    public function destroy(string $id)
     {
-        $transaction = Transaction::findOrFail($transactionId);
-        $order = Order::when('TransactionID', $transaction->id);
-        $orderDetail = OrderDetail::where('OrderID', $order->id);
+        $orderDetail = OrderDetail::findOrFail($id);
         $orderDetail->delete();
         return response()->json([
             'status' => 'success',
             'message' => 'Order detail deleted successful',
-            'data' => $orderDetail
         ]);
     }
 }
